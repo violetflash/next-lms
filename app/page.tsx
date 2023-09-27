@@ -1,6 +1,10 @@
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   return (
-    <p className="text-3xl font-medium text-sky-700">Initial element</p>
+    <div>
+      <p className="text-3xl font-medium text-sky-700">Initial element</p>
+      <Button variant="destructive">Click me</Button>
+    </div>
   )
 }
