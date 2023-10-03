@@ -13,8 +13,8 @@ const DashBoardLayout = ({children}: Props) => {
       </div>
       <div
         className={cn(
-          "hidden h-full w-56 flex-col fixed inset-y-0 z-50",
-          'md:flex'
+          "hidden h-full w-56 fixed inset-y-0 z-50",
+          'md:flex md:flex-col'
         )}
       >
         <Sidebar />

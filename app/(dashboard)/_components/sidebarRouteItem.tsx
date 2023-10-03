@@ -5,12 +5,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 type Props = {
-  key: string;
   icon: LucideIcon;
   label: string;
   href: string;
 };
-export const SidebarRouteItem = ({key, label, href, icon: Icon}: Props) => {
+export const SidebarRouteItem = ({label, href, icon: Icon}: Props) => {
   const pathname = usePathname();
   const router = useRouter();
   const isActive =
@@ -24,7 +23,6 @@ export const SidebarRouteItem = ({key, label, href, icon: Icon}: Props) => {
 
   return (
     <button
-      key={key}
       onClick={onClick}
       className={cn(
         'flex items-center gap-x-2 text-slate-500 text-sm font-[500] pl-6 transition-all',
