@@ -19,7 +19,7 @@ const DashBoardLayout = ({children}: Props) => {
       >
         <Sidebar />
       </div>
-      <main className="md:pl-56 h-full">
+      <main className="md:pl-56 h-full pt-[80px]">
         {children}
       </main>
     </div>
