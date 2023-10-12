@@ -22,11 +22,10 @@ import {
   Form
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { Course } from '.prisma/client';
 
 type DescriptionFormProps = {
-  initialData: {
-    description: string;
-  }
+  initialData: Course
   courseId: string
 };
 
@@ -40,7 +39,9 @@ export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps)
   const [isEditing, setIsEditing] = React.useState(false);
   const form = useForm<TitleFormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData
+    defaultValues: {
+      description: initialData?.description ?? ''
+    }
   });
 
   const {
