@@ -21,7 +21,7 @@ export async function PATCH(
         user_id: userId
       },
       data: {
-        title: values.title
+        ...values
       }
     })
 

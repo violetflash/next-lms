@@ -1,3 +1,4 @@
+import { DescriptionForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/description-form';
 import { TitleForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/title-form';
 import { IconBadge } from '@/components/icon-badge';
 import { db } from '@/lib/db';
@@ -63,6 +64,10 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
             </h2>
           </div>
           <TitleForm
+            initialData={course}
+            courseId={course_id}
+          />
+          <DescriptionForm
             initialData={course}
             courseId={course_id}
           />
