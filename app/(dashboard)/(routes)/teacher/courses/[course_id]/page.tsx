@@ -1,4 +1,5 @@
 import { DescriptionForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/description-form';
+import { ImageForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/image-form';
 import { TitleForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/title-form';
 import { IconBadge } from '@/components/icon-badge';
 import { db } from '@/lib/db';
@@ -22,7 +23,7 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
   const course = await db.course.findUnique({
     where: {
       id: course_id,
-      user_id: userId,
+      user_id: userId
     },
   })
 
@@ -68,6 +69,10 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
             courseId={course_id}
           />
           <DescriptionForm
+            initialData={course}
+            courseId={course_id}
+          />
+          <ImageForm
             initialData={course}
             courseId={course_id}
           />
