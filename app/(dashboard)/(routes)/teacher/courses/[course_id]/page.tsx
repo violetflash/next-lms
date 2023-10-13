@@ -25,7 +25,17 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
       id: course_id,
       user_id: userId
     },
+  });
+
+  console.log('course: >>', course);
+
+  const categories = await db.category.findMany({
+    orderBy: {
+      name: 'asc'
+    }
   })
+
+  console.log('categories: >>', categories);
 
   if (!course) {
     return redirect('/')
