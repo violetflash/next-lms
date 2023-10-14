@@ -1,20 +1,19 @@
 'use client'
 import {
-  descriptionFormSchema,
-  DescriptionFormSchema
+  categoryFormSchema,
+  CategoryFormSchema
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/schemas';
 import { EditButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/edit-button';
 import { SubmitButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-button';
 import {
   onSubmitCourse
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
-import { Textarea } from '@/components/ui/textarea';
+import { Combobox, Option } from '@/components/ui/combobox';
 import { useToggle } from '@/lib/hooks/use-toggle';
 import { cn } from '@/lib/utils';
 // @flow
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -26,15 +25,16 @@ import {
   FormItem,
   Form
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 import { Course } from '.prisma/client';
 
-type DescriptionFormProps = {
+type CategoryFormProps = {
   initialData: Course
   courseId: string
+  options: Option[];
 };
 
-export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps) => {
+
+export const CategoryForm = ({ initialData, courseId, options }: CategoryFormProps) => {
   const router = useRouter();
   const [isEditing, toggleEdit] = useToggle(false);
 
@@ -43,11 +43,10 @@ export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps)
     toggleEdit,
     router
   };
-
-  const form = useForm<DescriptionFormSchema>({
-    resolver: zodResolver(descriptionFormSchema),
+  const form = useForm<CategoryFormSchema>({
+    resolver: zodResolver(categoryFormSchema),
     defaultValues: {
-      description: initialData?.description ?? ''
+      category_id: initialData?.category_id ?? ''
     }
   });
 
@@ -55,23 +54,24 @@ export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps)
     control,
     handleSubmit,
     formState: {
-      isSubmitting
+      isSubmitting,
     }
   } = form;
 
+  const selectedOption = options.find((option) => option.value === initialData.category_id);
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="flex items-center justify-between font-medium">
-        Description
+        Category
         <EditButton toggleCb={toggleEdit} isEditing={isEditing} />
       </div>
       {!isEditing ? (
         <p className={cn(
           "text-sm mt-2",
-          !initialData.description && "text-slate-500 italic"
+          !initialData.category_id && "text-slate-500 italic"
         )}>
-          {initialData.description || "No description provided"}
+          {selectedOption?.label || "No category provided"}
         </p>
       ) : (
         <Form {...form} >
@@ -81,16 +81,14 @@ export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps)
           >
             <FormField
               control={control}
-              name="description"
+              name="category_id"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea
-                      id="description"
-                      disabled={isSubmitting}
-                      placeholder="whatever you want to say about your course"
-                      className="w-full"
+                    <Combobox
+                      options={options}
                       {...field}
+                      placeholder="Select category"
                     />
                   </FormControl>
                   <FormMessage />

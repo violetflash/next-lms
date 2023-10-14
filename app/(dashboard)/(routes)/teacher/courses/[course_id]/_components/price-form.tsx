@@ -1,20 +1,21 @@
 'use client'
 import {
-  descriptionFormSchema,
-  DescriptionFormSchema
+  priceFormSchema,
+  PriceFormSchema
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/schemas';
 import { EditButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/edit-button';
 import { SubmitButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-button';
 import {
   onSubmitCourse
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { formatPrice } from '@/lib/format';
 import { useToggle } from '@/lib/hooks/use-toggle';
 import { cn } from '@/lib/utils';
 // @flow
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -26,15 +27,14 @@ import {
   FormItem,
   Form
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 import { Course } from '.prisma/client';
 
-type DescriptionFormProps = {
+type PriceFormProps = {
   initialData: Course
   courseId: string
 };
 
-export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps) => {
+export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const router = useRouter();
   const [isEditing, toggleEdit] = useToggle(false);
 
@@ -42,53 +42,56 @@ export const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps)
     courseId,
     toggleEdit,
     router
-  };
+  }
 
-  const form = useForm<DescriptionFormSchema>({
-    resolver: zodResolver(descriptionFormSchema),
+  const form = useForm<PriceFormSchema>({
+    resolver: zodResolver(priceFormSchema),
     defaultValues: {
-      description: initialData?.description ?? ''
+      price: initialData?.price ?? undefined
     }
   });
 
   const {
-    control,
     handleSubmit,
     formState: {
       isSubmitting
     }
   } = form;
 
-
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="flex items-center justify-between font-medium">
-        Description
+        Course price
         <EditButton toggleCb={toggleEdit} isEditing={isEditing} />
       </div>
       {!isEditing ? (
         <p className={cn(
           "text-sm mt-2",
-          !initialData.description && "text-slate-500 italic"
+          !initialData.price && "text-slate-500 italic"
         )}>
-          {initialData.description || "No description provided"}
+          {initialData.price
+            ? formatPrice(initialData.price)
+            : "No price provided"
+          }
         </p>
       ) : (
         <Form {...form} >
           <form
-            onSubmit={handleSubmit(onSubmitCourse.bind(submitHelpers))}
+            onSubmit={form.handleSubmit(onSubmitCourse.bind(submitHelpers))}
             className="space-y-4 mt-4"
           >
             <FormField
-              control={control}
-              name="description"
+              control={form.control}
+              name="price"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea
-                      id="description"
+                    <Input
+                      type="number"
+                      step="0.01"
+                      id="price"
                       disabled={isSubmitting}
-                      placeholder="whatever you want to say about your course"
+                      placeholder="Set price for your course"
                       className="w-full"
                       {...field}
                     />
