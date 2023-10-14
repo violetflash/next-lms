@@ -18,16 +18,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export type ComboOption<T = string> = {
+export type Option<T = string> = {
   label: string;
   value: T;
 }
 
 interface ComboboxProps {
-  options: ComboOption[];
+  options: Option[];
   placeholder?: string;
-  onChange: (value: ComboOption['value']) => void;
-  value?: ComboOption['value'];
+  onChange: (value: Option['value']) => void;
+  value?: Option['value'];
 }
 
 export const Combobox = ({
@@ -45,15 +45,15 @@ export const Combobox = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-full justify-between"
         >
           {value
             ? options.find((option) => option.value === value)?.label
-            : "Select framework..."}
+            : placeholder ?? "Select an option"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput placeholder={placeholder} />
           <CommandEmpty>No such options found.</CommandEmpty>

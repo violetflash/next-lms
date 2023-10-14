@@ -1,12 +1,15 @@
+import { AttachmentForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/attachment-form';
+import React from 'react';
+import { redirect } from 'next/navigation';
+import { CircleDollarSign, File, LayoutDashboard, ListChecks } from 'lucide-react';
+import { CategoryForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/category-form';
+import { PriceForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/price-form';
 import { DescriptionForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/description-form';
 import { ImageForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/image-form';
 import { TitleForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/title-form';
 import { IconBadge } from '@/components/icon-badge';
 import { db } from '@/lib/db';
-import { auth } from '@clerk/nextjs';
-import { LayoutDashboard } from 'lucide-react';
-import { redirect } from 'next/navigation';
-import React from 'react';
+import { useUserId } from '@/lib/hooks/use-user-id';
 
 type Props = {
   params: {
@@ -14,17 +17,20 @@ type Props = {
   }
 };
 const CourseIdPage = async ({ params: { course_id } }: Props) => {
-  const { userId } = auth();
-
-  if (!userId) {
-    return redirect('/')
-  }
+  const { userId } = useUserId();
 
   const course = await db.course.findUnique({
     where: {
       id: course_id,
       user_id: userId
     },
+    include: {
+      attachments: {
+        orderBy: {
+          created_at: 'desc'
+        }
+      }
+    }
   });
 
   console.log('course: >>', course);
@@ -51,7 +57,6 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
 
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
-
   const completionProgressText = `(${completedFields}/${totalFields})`;
 
   return (
@@ -86,6 +91,57 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
             initialData={course}
             courseId={course_id}
           />
+          <CategoryForm
+            initialData={course}
+            courseId={course_id}
+            options={categories.map((category) => {
+              return {
+                label: category.name,
+                value: category.id
+              }
+            })}
+          />
+        </div>
+        <div className="space-y-6">
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={ListChecks} />
+              <h2 className="text-xl">
+                Course chapters
+              </h2>
+            </div>
+            <div>
+              TODO: Add chapters
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center gap-x-2">
+            <IconBadge icon={CircleDollarSign} />
+            <h2 className="text-xl">
+              Sell your course
+            </h2>
+          </div>
+          <div>
+            <PriceForm
+              initialData={course}
+              courseId={course_id}
+            />
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center gap-x-2">
+            <IconBadge icon={File} />
+            <h2 className="text-xl">
+              Resources & Attachments
+            </h2>
+          </div>
+          <div>
+            <AttachmentForm
+              initialData={course}
+              courseId={course_id}
+            />
+          </div>
         </div>
       </div>
     </div>

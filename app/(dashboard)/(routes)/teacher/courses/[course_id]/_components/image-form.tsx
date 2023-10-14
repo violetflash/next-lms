@@ -1,17 +1,18 @@
 'use client'
+import { EditButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/edit-button';
+import {
+  onSubmitCourse
+} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
 import { FileUpload } from '@/components/file-upload';
+import { useToggle } from '@/lib/hooks/use-toggle';
 
 // @flow
-import { Pencil, Loader2, PlusCircle, ImageIcon } from 'lucide-react';
+import { Pencil,  PlusCircle, ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import toast from 'react-hot-toast';
-import * as z from 'zod';
-import axios from 'axios';
 
 // ui
-import { Button } from '@/components/ui/button';
 import { Course } from '.prisma/client';
 
 type ImageFormProps = {
@@ -19,31 +20,16 @@ type ImageFormProps = {
   courseId: string
 };
 
-const formSchema = z.object({
-  image_url: z.string().min(1, { message: "Image url is required" })
-});
 
-type TitleFormSchema = z.infer<typeof formSchema>;
 export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   const router = useRouter();
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditing, toggleEdit] = useToggle(false);
 
-  const onSubmit = async (values: TitleFormSchema) => {
-    console.log('values: >>', values);
-    try {
-      const response = await axios.patch(`/api/courses/${courseId}`, values);
-      toast.success('Course updated successfully');
-      console.log('response: >>', response);
-      toggleEdit();
-      router.refresh();
-    } catch (error) {
-      toast.error('Something went wrong while updating your course');
-    }
-  }
-
-  const toggleEdit = () => {
-    setIsEditing((prev) => !prev);
-  }
+  const submitHelpers = {
+    courseId,
+    toggleEdit,
+    router
+  };
 
   const getButtonContent = () => {
     if (isEditing) return 'Cancel';
@@ -68,7 +54,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   const getImageContent = () => {
     if (!initialData.image_url) {
       return (
-        <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
+        <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md mt-2">
           <ImageIcon className="h-10 w-10 text-slate-500" />
         </div>
       );
@@ -89,10 +75,12 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="flex items-center justify-between font-medium">
-        Course image
-        <Button variant="ghost" onClick={toggleEdit}>
-          {getButtonContent()}
-        </Button>
+        Image
+        <EditButton
+          toggleCb={toggleEdit}
+          isEditing={isEditing}
+          customContent={getButtonContent()}
+        />
       </div>
       {!isEditing
         ? getImageContent()
@@ -102,7 +90,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
               endpoint="courseImage"
               onChange={(url) => {
                 if (url) {
-                  onSubmit({ image_url: url });
+                  onSubmitCourse.call(submitHelpers, { image_url: url });
                 }
               }}
             />
