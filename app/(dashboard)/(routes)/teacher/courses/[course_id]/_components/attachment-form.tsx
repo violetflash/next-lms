@@ -41,7 +41,7 @@ const getAttachmentContent = ({ initialData, deletingId, onDelete }: GetAttachme
   }
   return (
     <div className="space-y-2 mt-2">
-      <ul>
+      <ul className="flex flex-col gap-y-2">
         {initialData.attachments.map((attachment) => (
           <li key={attachment.id} className="group flex items-center p-3 w-full bg-sky-100 border border-sky-200 rounded-md gap-x-2">
             <File className="h-4 w-4 flex-shrink-0 group-hover:text-sky-700"/>

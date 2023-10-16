@@ -25,6 +25,8 @@ model Course {
   updated_at   DateTime     @updatedAt
   category_id  String?
   category     Category?    @relation(fields: [category_id], references: [id])
+  chapters     Chapter[]
+  purchase     Purchase[]
 
   @@index([category_id])
 }
@@ -45,4 +47,72 @@ model Attachment {
   updated_at DateTime @updatedAt
 
   @@index([course_id])
+}
+
+model Chapter {
+  id           String  @id @default(uuid())
+  title        String
+  description  String? @db.Text
+  video_url    String? @db.Text
+  position     Int
+  is_published Boolean @default(false)
+  is_free      Boolean @default(false)
+
+  mux_data MuxData?
+
+  course_id String
+  course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
+
+  user_progress UserProgress[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([course_id])
+}
+
+model MuxData {
+  id          String  @default(uuid())
+  asset_id    String?
+  playback_id String?
+
+  chapter_id String  @unique
+  chapter    Chapter @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
+}
+
+model UserProgress {
+  id         String   @id @default(uuid())
+  user_id    String
+  chapter_id String
+  Chapter    Chapter? @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
+
+  is_completed Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([user_id, chapter_id]) // must be a unique combination of this ids
+  @@index([chapter_id])
+}
+
+model Purchase {
+  id      String @id @default(uuid())
+  user_id String
+
+  course_id String
+  course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([course_id])
+}
+
+model Customer {
+  id                 String @id @default(uuid())
+  user_id            String @unique
+  stripe_customer_id String @unique
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
