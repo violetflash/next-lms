@@ -1,20 +1,19 @@
 'use client'
 import {
-  descriptionFormSchema,
-  DescriptionFormSchema
+  chapterFormSchema,
+  ChapterFormSchema,
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/schemas';
 import { EditButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/edit-button';
 import { SubmitButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-button';
-import {
-  onSubmitCourse
-} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { useToggle } from '@/lib/hooks/use-toggle';
 import { cn } from '@/lib/utils';
+import { Chapter } from '@prisma/client';
+import axios from 'axios';
+import { PlusCircle } from 'lucide-react';
 // @flow
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -27,27 +26,37 @@ import {
   Form
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import toast from 'react-hot-toast';
 import { Course } from '.prisma/client';
+import { ChaptersList } from './chapters-list';
+
+type CourseWithChapters = Course & {
+  chapters: Chapter[]
+};
 
 type ChaptersFormProps = {
-  initialData: Course
+  initialData: CourseWithChapters
   courseId: string
 };
 
+
+
 export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
   const router = useRouter();
-  const [isEditing, toggleEdit] = useToggle(false);
+  const [isUpdating, toggleUpdating] = useToggle(false);
+  const [isCreating, toggleCreating] = useToggle(false);
+
 
   const submitHelpers = {
     courseId,
-    toggleEdit,
+    toggleCreate: toggleCreating,
     router
   };
 
-  const form = useForm<DescriptionFormSchema>({
-    resolver: zodResolver(descriptionFormSchema),
+  const form = useForm<ChapterFormSchema>({
+    resolver: zodResolver(chapterFormSchema),
     defaultValues: {
-      description: initialData?.description ?? ''
+      title: ''
     }
   });
 
@@ -59,36 +68,46 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
     }
   } = form;
 
+  const onSubmit = async (values: ChapterFormSchema) => {
+    console.log('values: >>', values);
+    try {
+      const response = await axios.post(`/api/courses/${courseId}/chapters`, values);
+      toast.success('Chapter created successfully');
+      toggleCreating();
+      router.refresh();
+    } catch (error) {
+      toast.error('Something went wrong while creating a new chapter');
+    }
+  };
+
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="flex items-center justify-between font-medium">
         Chapters
-        <EditButton toggleCb={toggleEdit} isEditing={isEditing} />
+        <EditButton
+          toggleCb={toggleCreating}
+          isEditing={isCreating}
+          icon={PlusCircle}
+          buttonText="Add"
+        />
       </div>
-      {!isEditing ? (
-        <p className={cn(
-          "text-sm mt-2",
-          !initialData.description && "text-slate-500 italic"
-        )}>
-          {initialData.description || "No description provided"}
-        </p>
-      ) : (
+      {isCreating && (
         <Form {...form} >
           <form
-            onSubmit={handleSubmit(onSubmitCourse.bind(submitHelpers))}
+            onSubmit={handleSubmit(onSubmit)}
             className="space-y-4 mt-4"
           >
             <FormField
               control={control}
-              name="description"
+              name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea
-                      id="description"
+                    <Input
+                      id="chapter_title"
                       disabled={isSubmitting}
-                      placeholder="whatever you want to say about your course"
+                      placeholder="Chapter title"
                       className="w-full"
                       {...field}
                     />
@@ -97,9 +116,27 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
                 </FormItem>
               )}
             />
-            <SubmitButton isSubmitting={isSubmitting} />
+            <SubmitButton isSubmitting={isSubmitting} buttonText="Create" />
           </form>
         </Form>
+      )}
+      {!isCreating && (
+        <div className={cn(
+          'text-sm mt-2',
+          !initialData.chapters.length && 'text-slate-500 italic'
+        )}>
+          {!initialData.chapters.length && "No chapters yet"}
+          <ChaptersList
+            onEdit={() => {}}
+            onReorder={() => {}}
+            items={initialData.chapters ?? []}
+          />
+        </div>
+      )}
+      {!isCreating && (
+        <p className="text-sm text-muted-foreground mt-4">
+          Drag and drop to reorder the chapters
+        </p>
       )}
     </div>
   );

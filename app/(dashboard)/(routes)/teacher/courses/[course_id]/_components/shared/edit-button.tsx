@@ -1,13 +1,21 @@
 import { Button } from '@/components/ui/button';
-import { Pencil } from 'lucide-react';
+import { LucideIcon, Pencil } from 'lucide-react';
 import * as React from 'react';
 
 type EditButtonProps = {
   toggleCb: () => void;
   isEditing: boolean;
   customContent?: React.ReactNode;
+  icon?: LucideIcon;
+  buttonText?: string;
 }
-export const EditButton = ({ toggleCb, isEditing, customContent }: EditButtonProps) => {
+export const EditButton = ({
+  toggleCb,
+  isEditing,
+  customContent,
+  icon: Icon = Pencil,
+  buttonText = 'Edit'
+}: EditButtonProps) => {
   return (
     <Button variant="default" onClick={toggleCb} size="sm">
       {customContent
@@ -17,8 +25,8 @@ export const EditButton = ({ toggleCb, isEditing, customContent }: EditButtonPro
             (<>Cancel</>)
             : (
               <>
-                <Pencil className="h-4 w-4 mr-2"/>
-                Edit
+                <Icon className="h-4 w-4 mr-2"/>
+                {buttonText}
               </>
             )
         )

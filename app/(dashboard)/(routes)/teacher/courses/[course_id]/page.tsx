@@ -59,6 +59,7 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
     course.image_url,
     course.price,
     course.category_id,
+    course.chapters.some(chapter => chapter.is_published),
   ];
 
   const totalFields = requiredFields.length;
