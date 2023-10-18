@@ -1,6 +1,9 @@
+import { teacherRoute } from '@/lib/constants';
 import { db } from '@/lib/db';
 import { fieldsCompletionProgress } from '@/lib/fieldsCompletionProgress';
 import { getUserId } from '@/lib/hooks/get-user-id';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 type ChapterIdPageProps = {
@@ -9,8 +12,8 @@ type ChapterIdPageProps = {
     chapter_id: string;
   }
 };
-const ChapterIdPage = async ({ params }: ChapterIdPageProps) => {
-  const { userId } = getUserId();
+const ChapterIdPage = async ({params}: ChapterIdPageProps) => {
+  const {userId} = getUserId();
 
   const chapter = await db.chapter.findUnique({
     where: {
@@ -39,10 +42,24 @@ const ChapterIdPage = async ({ params }: ChapterIdPageProps) => {
   } = fieldsCompletionProgress(requiredFields);
 
   return (
-    <div>
-      Chapter with id {params.chapter_id}
-      <div>
-        {JSON.stringify(chapter, null, 2)}
+    <div className="p-6">
+      <div className="flex items-center justify-between">
+        <div className="w-full">
+          <Link
+            className="flex items-center gap-x-2 text-sm hover:opacity-75 transition mb-6"
+            href={`/${teacherRoute}/courses/${params.course_id}`}
+          >
+            <ArrowLeft className="h-4 w-4 opacity-75"/>
+            Back to course setup
+          </Link>
+          <div className="flex items-center justify-between w-full">
+            <div className="flex flex-col gap-y-2">
+              <h1 className="text-2xl font-medium">
+                Chapter Creation
+              </h1>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
