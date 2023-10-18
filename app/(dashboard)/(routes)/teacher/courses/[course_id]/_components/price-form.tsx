@@ -10,7 +10,7 @@ import {
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { formatPrice } from '@/lib/format';
+import { formatPrice } from '@/lib/formatPrice';
 import { useToggle } from '@/lib/hooks/use-toggle';
 import { cn } from '@/lib/utils';
 // @flow

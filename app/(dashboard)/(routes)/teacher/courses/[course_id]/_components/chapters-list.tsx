@@ -12,18 +12,20 @@ import {
   DropResult
 } from '@hello-pangea/dnd';
 
-type ChapterUpdateData = Pick<Chapter, "id" | "position">;
+export type ChapterUpdateData = Pick<Chapter, "id" | "position">;
 
 type ChaptersListProps = {
   items: Chapter[];
   onEdit: (id: string) => void;
   onReorder: (orderData: ChapterUpdateData[]) => void;
+  isDisabled: boolean;
 }
 
 export const ChaptersList = ({
   onEdit,
   onReorder,
-  items
+  items,
+  isDisabled
 }: ChaptersListProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [chapters, setChapters] = useState<Chapter[]>(items);
@@ -57,6 +59,8 @@ export const ChaptersList = ({
     }));
 
     onReorder(bulkUpdateData);
+    // save results to prisma
+
   }
 
   // "use client" component still run on the server side,
@@ -70,15 +74,15 @@ export const ChaptersList = ({
   }
 
   return (
-    <DragDropContext onDragEnd={onDragEnd} >
-      <Droppable droppableId="chapters" direction="vertical">
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="chapters" direction="vertical" isDropDisabled={isDisabled}>
         {(provided) => (
           <ul
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
             {chapters.map((chapter, index) => (
-              <Draggable key={chapter.id} draggableId={chapter.id} index={index}>
+              <Draggable key={chapter.id} draggableId={chapter.id} index={index} isDragDisabled={isDisabled}>
                 {(provided) => (
                   <li
                     ref={provided.innerRef}
