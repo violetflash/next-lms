@@ -1,4 +1,7 @@
 import {
+  ChapterAccessForm
+} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/chapters/[chapter_id]/_components/chapter-access-form';
+import {
   ChapterDescriptionForm
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/chapters/[chapter_id]/_components/chapter-description-form';
 import {
@@ -9,7 +12,7 @@ import { teacherRoute } from '@/lib/constants';
 import { db } from '@/lib/db';
 import { fieldsCompletionProgress } from '@/lib/fieldsCompletionProgress';
 import { getUserId } from '@/lib/hooks/get-user-id';
-import { ArrowLeft, LayoutDashboard } from 'lucide-react';
+import { ArrowLeft, Eye, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
@@ -91,7 +94,19 @@ const ChapterIdPage = async ({params}: ChapterIdPageProps) => {
             chapterId={chapter_id}
           />
         </div>
-
+        <div>
+          <div className="flex items-center gap-x-2">
+            <IconBadge icon={Eye} />
+            <h2>
+              Access Settings
+            </h2>
+          </div>
+          <ChapterAccessForm
+            initialData={chapter}
+            courseId={course_id}
+            chapterId={chapter_id}
+          />
+        </div>
       </div>
     </div>
   );

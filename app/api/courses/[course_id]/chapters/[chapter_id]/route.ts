@@ -9,7 +9,9 @@ export async function PATCH(
   try {
     const {userId} = auth();
     const {chapter_id, course_id} = params;
-    const { title } = await req.json();
+    // to prevent user from editing published flags
+    // is_published will be controlled by separate api route
+    const {isPublished, ...values} = await req.json();
     if (!userId) {
       return new NextResponse('Unauthorized', {status: 401});
     }
@@ -30,7 +32,7 @@ export async function PATCH(
         course_id: course_id
       },
       data: {
-        title: title
+        ...values
       }
     });
 

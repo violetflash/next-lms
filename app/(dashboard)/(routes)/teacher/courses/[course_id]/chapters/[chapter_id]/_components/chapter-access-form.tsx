@@ -1,6 +1,7 @@
 'use client'
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { Chapter } from '@prisma/client';
 import { useRouter } from 'next/navigation';
@@ -14,8 +15,8 @@ import {
   onSubmitCourse, SubmitHelpers
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
 import {
-  chapterDescriptionFormSchema,
-  ChapterDescriptionFormSchema,
+  chapterAccessFormSchema,
+  ChapterAccessFormSchema,
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/chapters/[chapter_id]/_components/schemas';
 import { useToggle } from '@/lib/hooks/use-toggle';
 // ui
@@ -24,7 +25,7 @@ import {
   FormMessage,
   FormField,
   FormItem,
-  Form
+  Form, FormDescription
 } from '@/components/ui/form';
 
 type Props = {
@@ -33,7 +34,7 @@ type Props = {
   chapterId: string;
 };
 
-export const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: Props) => {
+export const ChapterAccessForm = ({ initialData, courseId, chapterId }: Props) => {
   const router = useRouter();
   const [isEditing, toggleEdit] = useToggle(false);
 
@@ -48,10 +49,10 @@ export const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: Pro
     errMsg: 'Failed to update Chapter description'
   }
 
-  const form = useForm<ChapterDescriptionFormSchema>({
-    resolver: zodResolver(chapterDescriptionFormSchema),
+  const form = useForm<ChapterAccessFormSchema>({
+    resolver: zodResolver(chapterAccessFormSchema),
     defaultValues: {
-      description: initialData.description ?? ''
+      is_free: Boolean(initialData.is_free)
     }
   });
 
@@ -66,20 +67,17 @@ export const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: Pro
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="flex items-center justify-between font-medium">
-        Chapter Description
-        <EditButton toggleCb={toggleEdit} isEditing={isEditing} />
+        Chapter Access
+        <EditButton toggleCb={toggleEdit} isEditing={isEditing} buttonText="Edit access"/>
       </div>
       {!isEditing ? (
         <div
           className={cn(
             'text-sm mt-2',
-            !initialData.description && 'text-slate-500 italic'
+            !initialData.is_free && 'text-slate-500 italic'
           )}
         >
-          {initialData.description
-            ? <Preview value={initialData.description ?? ''} />
-            : 'No description provided'
-          }
+          {initialData.is_free ? 'Free' : 'Paid'}
         </div>
       ) : (
         <Form {...form} >
@@ -89,14 +87,20 @@ export const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: Pro
           >
             <FormField
               control={control}
-              name="description"
+              name="is_free"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                   <FormControl>
-                    <Editor
-                      {...field}
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormDescription>
+                      Check this box if you want to make this chapter free for preview
+                    </FormDescription>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

@@ -13,11 +13,11 @@ type ChapterDescriptionFormSchema = z.infer<typeof chapterDescriptionFormSchema>
 
 
 
-const imageFormSchema = z.object({
-  image_url: z.string().min(1, { message: "Image url is required" })
+const chapterAccessFormSchema = z.object({
+  is_free: z.boolean().default(false)
 });
 
-type ImageFormSchema = z.infer<typeof imageFormSchema>;
+type ChapterAccessFormSchema = z.infer<typeof chapterAccessFormSchema>;
 
 const categoryFormSchema = z.object({
   category_id: z.string().min(1, { message: "Category is required" })
@@ -47,6 +47,8 @@ type ChapterFormSchema = z.infer<typeof chapterFormSchema>;
 export {
   chapterTitleFormSchema,
   chapterDescriptionFormSchema,
+  chapterAccessFormSchema,
   type ChapterTitleFormSchema,
-  type ChapterDescriptionFormSchema
+  type ChapterDescriptionFormSchema,
+  type ChapterAccessFormSchema
 }
