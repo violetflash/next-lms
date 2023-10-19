@@ -1,4 +1,4 @@
-export const fieldsCompletionProgress = (requiredFields: (string | null)[]) => {
+export const fieldsCompletionProgress = (requiredFields: (string | number | boolean | null)[]) => {
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
   const completionProgressText = `(${completedFields}/${totalFields})`;

@@ -1,22 +1,21 @@
 'use client'
-import {
-  categoryFormSchema,
-  CategoryFormSchema
-} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/schemas';
-import { EditButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/edit-button';
-import { SubmitButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-button';
-import {
-  onSubmitCourse, SubmitHelpers
-} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
-import { Combobox, Option } from '@/components/ui/combobox';
-import { useToggle } from '@/lib/hooks/use-toggle';
-import { cn } from '@/lib/utils';
-// @flow
+import { Chapter } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
+import { EditButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/edit-button';
+import { SubmitButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-button';
+import {
+  onSubmitCourse, SubmitHelpers
+} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
+import {
+  chapterDescriptionFormSchema,
+  ChapterDescriptionFormSchema,
+} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/chapters/[chapter_id]/_components/schemas';
+import { Textarea } from '@/components/ui/textarea';
+import { useToggle } from '@/lib/hooks/use-toggle';
 // ui
 import {
   FormControl,
@@ -25,16 +24,14 @@ import {
   FormItem,
   Form
 } from '@/components/ui/form';
-import { Course } from '.prisma/client';
 
-type CategoryFormProps = {
-  initialData: Course
-  courseId: string
-  options: Option[];
+type Props = {
+  initialData: Chapter;
+  courseId: string;
+  chapterId: string;
 };
 
-
-export const CategoryForm = ({ initialData, courseId, options }: CategoryFormProps) => {
+export const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: Props) => {
   const router = useRouter();
   const [isEditing, toggleEdit] = useToggle(false);
 
@@ -43,15 +40,16 @@ export const CategoryForm = ({ initialData, courseId, options }: CategoryFormPro
       toggleEdit()
       router.refresh();
     },
-    url: `/api/courses/${courseId}`,
-    method: 'PATCH',
-    errMsg: 'Failed to update category',
-    successMsg: 'Category successfully updated'
-  };
-  const form = useForm<CategoryFormSchema>({
-    resolver: zodResolver(categoryFormSchema),
+    // router,
+    url: `/api/courses/${courseId}/chapters/${chapterId}`,
+    successMsg: 'Chapter Description successfully updated',
+    errMsg: 'Failed to update Chapter description'
+  }
+
+  const form = useForm<ChapterDescriptionFormSchema>({
+    resolver: zodResolver(chapterDescriptionFormSchema),
     defaultValues: {
-      category_id: initialData?.category_id ?? ''
+      description: initialData.description ?? ''
     }
   });
 
@@ -59,24 +57,19 @@ export const CategoryForm = ({ initialData, courseId, options }: CategoryFormPro
     control,
     handleSubmit,
     formState: {
-      isSubmitting,
+      isSubmitting
     }
   } = form;
-
-  const selectedOption = options.find((option) => option.value === initialData.category_id);
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="flex items-center justify-between font-medium">
-        Category
+        Chapter Description
         <EditButton toggleCb={toggleEdit} isEditing={isEditing} />
       </div>
       {!isEditing ? (
-        <p className={cn(
-          "text-sm mt-2",
-          !initialData.category_id && "text-slate-500 italic"
-        )}>
-          {selectedOption?.label || "No category provided"}
+        <p className="text-sm mt-2">
+          {initialData.description ?? 'No description provided'}
         </p>
       ) : (
         <Form {...form} >
@@ -86,14 +79,16 @@ export const CategoryForm = ({ initialData, courseId, options }: CategoryFormPro
           >
             <FormField
               control={control}
-              name="category_id"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Combobox
-                      options={options}
+                    <Textarea
+                      id="description"
+                      disabled={isSubmitting}
+                      placeholder="Chapter Description"
+                      className="w-full"
                       {...field}
-                      placeholder="Select category"
                     />
                   </FormControl>
                   <FormMessage />

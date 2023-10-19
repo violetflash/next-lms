@@ -1,24 +1,32 @@
 import axios from 'axios';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context';
 import toast from 'react-hot-toast';
 
+export type SubmitHelpers = {
+  successCb: () => void;
+  method?: 'PATCH' | 'POST';
+  url: string;
+  successMsg: string;
+  errMsg: string;
+}
+
 export async function onSubmitCourse<T>(
-  this: {
-    courseId: string;
-    router: AppRouterInstance;
-    toggleEdit: () => void;
-  },
+  this: SubmitHelpers,
   values: T,
   ) {
-  const { courseId, router, toggleEdit } = this;
-  console.log('values: >>', values);
+  const {
+    successCb,
+    url,
+    successMsg = 'Successfully updated',
+    errMsg = 'Something went wrong',
+    method = 'PATCH',
+  } = this;
+  const axiosMethod = method === 'PATCH' ? axios.patch : axios.post;
+
   try {
-    const response = await axios.patch(`/api/courses/${courseId}`, values);
-    toast.success('Course updated successfully');
-    console.log('response: >>', response);
-    toggleEdit();
-    router.refresh();
+    await axiosMethod(url, values);
+    toast.success(successMsg);
+    successCb();
   } catch (error) {
-    toast.error('Something went wrong while updating your course');
+    toast.error(errMsg);
   }
 }

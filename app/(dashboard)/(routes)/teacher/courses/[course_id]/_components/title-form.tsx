@@ -6,7 +6,7 @@ import {
 import { EditButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/edit-button';
 import { SubmitButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-button';
 import {
-  onSubmitCourse
+  onSubmitCourse, SubmitHelpers
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
 import { useToggle } from '@/lib/hooks/use-toggle';
 import { useRouter } from 'next/navigation';
@@ -37,11 +37,16 @@ export const TitleForm = ({ initialData, courseId }: Props) => {
   const router = useRouter();
   const [isEditing, toggleEdit] = useToggle(false);
 
-  const submitHelpers = {
-    courseId,
-    toggleEdit,
-    router
-  }
+  const submitHelpers: SubmitHelpers = {
+    successCb: () => {
+      toggleEdit()
+      router.refresh();
+    },
+    url: `/api/courses/${courseId}`,
+    method: 'PATCH',
+    errMsg: 'Failed to update title',
+    successMsg: 'Title successfully updated'
+  };
 
   const form = useForm<TitleFormSchema>({
     resolver: zodResolver(titleFormSchema),

@@ -1,8 +1,15 @@
+import {
+  ChapterDescriptionForm
+} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/chapters/[chapter_id]/_components/chapter-description-form';
+import {
+  ChapterTitleForm
+} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/chapters/[chapter_id]/_components/chapter-title-form';
+import { IconBadge } from '@/components/icon-badge';
 import { teacherRoute } from '@/lib/constants';
 import { db } from '@/lib/db';
 import { fieldsCompletionProgress } from '@/lib/fieldsCompletionProgress';
 import { getUserId } from '@/lib/hooks/get-user-id';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
@@ -14,11 +21,12 @@ type ChapterIdPageProps = {
 };
 const ChapterIdPage = async ({params}: ChapterIdPageProps) => {
   const {userId} = getUserId();
+  const { chapter_id, course_id } = params;
 
   const chapter = await db.chapter.findUnique({
     where: {
-      id: params.chapter_id,
-      course_id: params.course_id
+      id: chapter_id,
+      course_id
     },
     include: {
       mux_data: true
@@ -57,9 +65,33 @@ const ChapterIdPage = async ({params}: ChapterIdPageProps) => {
               <h1 className="text-2xl font-medium">
                 Chapter Creation
               </h1>
+              <span>
+                Complete all fields {completionProgressText}
+              </span>
             </div>
           </div>
         </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+        <div className="space-y-4">
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={LayoutDashboard} />
+              <h2 className="text-xl">Customize your chapter</h2>
+            </div>
+          </div>
+          <ChapterTitleForm
+            initialData={chapter}
+            courseId={course_id}
+            chapterId={chapter_id}
+          />
+          <ChapterDescriptionForm
+            initialData={chapter}
+            courseId={course_id}
+            chapterId={chapter_id}
+          />
+        </div>
+
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { AttachmentForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/attachment-form';
 import { ChaptersForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/chapters-form';
+import { fieldsCompletionProgress } from '@/lib/fieldsCompletionProgress';
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { CircleDollarSign, File, LayoutDashboard, ListChecks } from 'lucide-react';
@@ -39,15 +40,11 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
     }
   });
 
-  console.log('course: >>', course);
-
   const categories = await db.category.findMany({
     orderBy: {
       name: 'asc'
     }
   })
-
-  console.log('categories: >>', categories);
 
   if (!course) {
     return redirect('/')
@@ -62,9 +59,11 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
     course.chapters.some(chapter => chapter.is_published),
   ];
 
-  const totalFields = requiredFields.length;
-  const completedFields = requiredFields.filter(Boolean).length;
-  const completionProgressText = `(${completedFields}/${totalFields})`;
+  const {
+    totalFields,
+    completedFields,
+    completionProgressText
+  } = fieldsCompletionProgress(requiredFields);
 
   return (
     <div className="p-6">

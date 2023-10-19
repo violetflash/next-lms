@@ -6,14 +6,12 @@ import {
 import { EditButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/edit-button';
 import { SubmitButton } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-button';
 import {
-  onSubmitCourse
+  onSubmitCourse, SubmitHelpers
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/shared/submit-function';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { formatPrice } from '@/lib/formatPrice';
 import { useToggle } from '@/lib/hooks/use-toggle';
 import { cn } from '@/lib/utils';
-// @flow
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,11 +36,16 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const router = useRouter();
   const [isEditing, toggleEdit] = useToggle(false);
 
-  const submitHelpers = {
-    courseId,
-    toggleEdit,
-    router
-  }
+  const submitHelpers: SubmitHelpers = {
+    successCb: () => {
+      toggleEdit()
+      router.refresh();
+    },
+    url: `/api/courses/${courseId}`,
+    method: 'PATCH',
+    errMsg: 'Failed to update price',
+    successMsg: 'Price successfully updated'
+  };
 
   const form = useForm<PriceFormSchema>({
     resolver: zodResolver(priceFormSchema),
