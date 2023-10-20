@@ -69,7 +69,6 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
   } = form;
 
   const onSubmit = async (values: ChapterFormSchema) => {
-    console.log('values: >>', values);
     try {
       const response = await axios.post(`/api/courses/${courseId}/chapters`, values);
       toast.success('Chapter created successfully');

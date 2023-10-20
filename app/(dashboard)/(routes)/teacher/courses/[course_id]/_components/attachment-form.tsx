@@ -89,11 +89,9 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
   const onSubmit = async (values: AttachmentFormSchema) => {
-    console.log('values: >>', values);
     try {
       const response = await axios.post(`/api/courses/${courseId}/attachments`, values);
       toast.success('Course updated successfully');
-      console.log('response: >>', response);
       toggleEdit();
       router.refresh();
     } catch (error) {
@@ -102,7 +100,6 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
   };
 
   const onDelete = async (id: string) => {
-    console.log('id: >>', id);
     try {
       setDeletingId(id)
       await axios.delete(`/api/courses/${courseId}/attachments/${id}`);

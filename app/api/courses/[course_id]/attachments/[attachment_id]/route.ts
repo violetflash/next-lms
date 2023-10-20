@@ -26,7 +26,6 @@ export async function DELETE(
       return new NextResponse('Unauthorized', {  status: 401 });
     }
 
-    console.log('attachmentId: >>', attachment_id);
 
     const attachment = await db.attachment.delete({
       where: {
