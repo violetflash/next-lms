@@ -7,12 +7,15 @@ import {
 import {
   ChapterTitleForm
 } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/chapters/[chapter_id]/_components/chapter-title-form';
+import {
+  ChapterVideoForm
+} from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/chapters/[chapter_id]/_components/chapter-video-form';
 import { IconBadge } from '@/components/icon-badge';
 import { teacherRoute } from '@/lib/constants';
 import { db } from '@/lib/db';
 import { fieldsCompletionProgress } from '@/lib/fieldsCompletionProgress';
 import { getUserId } from '@/lib/hooks/get-user-id';
-import { ArrowLeft, Eye, LayoutDashboard } from 'lucide-react';
+import { ArrowLeft, Eye, LayoutDashboard, Video } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
@@ -102,6 +105,19 @@ const ChapterIdPage = async ({params}: ChapterIdPageProps) => {
             </h2>
           </div>
           <ChapterAccessForm
+            initialData={chapter}
+            courseId={course_id}
+            chapterId={chapter_id}
+          />
+        </div>
+        <div>
+          <div className="flex items-center gap-x-2">
+            <IconBadge icon={Video} />
+            <h2>
+              Add a video
+            </h2>
+          </div>
+          <ChapterVideoForm
             initialData={chapter}
             courseId={course_id}
             chapterId={chapter_id}

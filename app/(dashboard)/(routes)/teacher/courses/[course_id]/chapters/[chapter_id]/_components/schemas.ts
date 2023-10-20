@@ -19,29 +19,11 @@ const chapterAccessFormSchema = z.object({
 
 type ChapterAccessFormSchema = z.infer<typeof chapterAccessFormSchema>;
 
-const categoryFormSchema = z.object({
-  category_id: z.string().min(1, { message: "Category is required" })
+const chapterVideoFormSchema = z.object({
+  video_url: z.string().min(1, { message: "Video URL is required" }),
 });
 
-type CategoryFormSchema = z.infer<typeof categoryFormSchema>;
-
-const priceFormSchema = z.object({
-  price: z.coerce.number()
-});
-
-type PriceFormSchema = z.infer<typeof priceFormSchema>;
-
-const attachmentFormSchema = z.object({
-  url: z.string().min(1)
-});
-
-type AttachmentFormSchema = z.infer<typeof attachmentFormSchema>;
-
-const chapterFormSchema = z.object({
-  title: z.string().min(1)
-});
-
-type ChapterFormSchema = z.infer<typeof chapterFormSchema>;
+type ChapterVideoFormSchema = z.infer<typeof chapterVideoFormSchema>;
 
 
 export {
