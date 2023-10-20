@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { teacherRoute } from '@/lib/constants';
 import { db } from '@/lib/db';
-import { useUserId } from '@/lib/hooks/use-user-id';
+import { getUserId } from '@/lib/hooks/get-user-id';
 import { auth } from '@clerk/nextjs';
 import Link from 'next/link';
 
@@ -10,7 +10,7 @@ type Props = {
 };
 const CoursesPage = async (props: Props) => {
 
-  const { userId } = useUserId();
+  const { userId } = getUserId();
 
   const courses = await db.course.findMany({
     where: {

@@ -41,7 +41,7 @@ const getAttachmentContent = ({ initialData, deletingId, onDelete }: GetAttachme
   }
   return (
     <div className="space-y-2 mt-2">
-      <ul>
+      <ul className="flex flex-col gap-y-2">
         {initialData.attachments.map((attachment) => (
           <li key={attachment.id} className="group flex items-center p-3 w-full bg-sky-100 border border-sky-200 rounded-md gap-x-2">
             <File className="h-4 w-4 flex-shrink-0 group-hover:text-sky-700"/>
@@ -89,11 +89,9 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
   const onSubmit = async (values: AttachmentFormSchema) => {
-    console.log('values: >>', values);
     try {
       const response = await axios.post(`/api/courses/${courseId}/attachments`, values);
       toast.success('Course updated successfully');
-      console.log('response: >>', response);
       toggleEdit();
       router.refresh();
     } catch (error) {
@@ -102,7 +100,6 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
   };
 
   const onDelete = async (id: string) => {
-    console.log('id: >>', id);
     try {
       setDeletingId(id)
       await axios.delete(`/api/courses/${courseId}/attachments/${id}`);

@@ -38,6 +38,13 @@ const attachmentFormSchema = z.object({
 
 type AttachmentFormSchema = z.infer<typeof attachmentFormSchema>;
 
+const chapterFormSchema = z.object({
+  title: z.string().min(1)
+});
+
+type ChapterFormSchema = z.infer<typeof chapterFormSchema>;
+
+
 export {
   titleFormSchema,
   descriptionFormSchema,
@@ -45,10 +52,12 @@ export {
   categoryFormSchema,
   priceFormSchema,
   attachmentFormSchema,
+  chapterFormSchema,
   type TitleFormSchema,
   type DescriptionFormSchema,
   type ImageFormSchema,
   type CategoryFormSchema,
   type PriceFormSchema,
-  type AttachmentFormSchema
+  type AttachmentFormSchema,
+  type ChapterFormSchema
 }

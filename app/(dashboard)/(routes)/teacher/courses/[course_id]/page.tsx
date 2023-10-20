@@ -1,4 +1,6 @@
 import { AttachmentForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/attachment-form';
+import { ChaptersForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/chapters-form';
+import { fieldsCompletionProgress } from '@/lib/fieldsCompletionProgress';
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { CircleDollarSign, File, LayoutDashboard, ListChecks } from 'lucide-react';
@@ -9,7 +11,7 @@ import { ImageForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id
 import { TitleForm } from '@/app/(dashboard)/(routes)/teacher/courses/[course_id]/_components/title-form';
 import { IconBadge } from '@/components/icon-badge';
 import { db } from '@/lib/db';
-import { useUserId } from '@/lib/hooks/use-user-id';
+import { getUserId } from '@/lib/hooks/get-user-id';
 
 type Props = {
   params: {
@@ -17,7 +19,7 @@ type Props = {
   }
 };
 const CourseIdPage = async ({ params: { course_id } }: Props) => {
-  const { userId } = useUserId();
+  const { userId } = getUserId();
 
   const course = await db.course.findUnique({
     where: {
@@ -25,6 +27,11 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
       user_id: userId
     },
     include: {
+      chapters: {
+        orderBy: {
+          position: 'asc'
+        }
+      },
       attachments: {
         orderBy: {
           created_at: 'desc'
@@ -33,15 +40,11 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
     }
   });
 
-  console.log('course: >>', course);
-
   const categories = await db.category.findMany({
     orderBy: {
       name: 'asc'
     }
   })
-
-  console.log('categories: >>', categories);
 
   if (!course) {
     return redirect('/')
@@ -52,12 +55,15 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
     course.description,
     course.image_url,
     course.price,
-    course.category_id
+    course.category_id,
+    course.chapters.some(chapter => chapter.is_published),
   ];
 
-  const totalFields = requiredFields.length;
-  const completedFields = requiredFields.filter(Boolean).length;
-  const completionProgressText = `(${completedFields}/${totalFields})`;
+  const {
+    totalFields,
+    completedFields,
+    completionProgressText
+  } = fieldsCompletionProgress(requiredFields);
 
   return (
     <div className="p-6">
@@ -110,9 +116,10 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
                 Course chapters
               </h2>
             </div>
-            <div>
-              TODO: Add chapters
-            </div>
+            <ChaptersForm
+              initialData={course}
+              courseId={course_id}
+            />
           </div>
         </div>
         <div>

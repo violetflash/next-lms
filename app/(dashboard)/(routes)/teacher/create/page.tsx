@@ -45,7 +45,6 @@ const CreateCourse = () => {
   } = form;
 
   const onSubmit = async (values: FormSchema) => {
-    console.log('values: >>', values);
     try {
       const response = await axios.post('/api/courses', values);
       router.push(`/${teacherRoute}/courses/${response.data.id}`);
