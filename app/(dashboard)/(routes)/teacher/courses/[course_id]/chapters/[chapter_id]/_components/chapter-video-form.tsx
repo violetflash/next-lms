@@ -1,5 +1,6 @@
 'use client'
 
+import MuxPlayer from '@mux/mux-player-react';
 import { Pencil, PlusCircle, ImageIcon, VideoIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -67,7 +68,9 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
     }
     return (
       <div className="relative aspect-video mt-2">
-        Video uploaded!
+        <MuxPlayer
+          playbackId={initialData.mux_data?.playback_id ?? ''}
+        />
       </div>
 
     )
@@ -76,7 +79,7 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="flex items-center justify-between font-medium">
-        Image
+        Chapter Video
         <EditButton
           toggleCb={toggleEdit}
           isEditing={isEditing}
@@ -88,7 +91,7 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
         : (
           <div>
             <FileUpload
-              endpoint="courseImage"
+              endpoint="chapterVideo"
               onChange={(url) => {
                 if (url) {
                   onSubmitCourse.call(submitHelpers, { video_url: url });
