@@ -58,7 +58,7 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
     }
   };
 
-  const getImageContent = () => {
+  const getVideoContent = () => {
     if (!initialData.video_url) {
       return (
         <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md mt-2">
@@ -74,7 +74,23 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
       </div>
 
     )
-  }
+  };
+
+  const getEditContent = () => (
+    <div>
+      <FileUpload
+        endpoint="chapterVideo"
+        onChange={(url) => {
+          if (url) {
+            onSubmitCourse.call(submitHelpers, { video_url: url });
+          }
+        }}
+      />
+      <div className="text-xs text-muted-foreground mt-4">
+        Upload this chapter&apos;s video
+      </div>
+    </div>
+  );
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
@@ -86,23 +102,8 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVi
           customContent={getButtonContent()}
         />
       </div>
-      {!isEditing
-        ? getImageContent()
-        : (
-          <div>
-            <FileUpload
-              endpoint="chapterVideo"
-              onChange={(url) => {
-                if (url) {
-                  onSubmitCourse.call(submitHelpers, { video_url: url });
-                }
-              }}
-            />
-            <div className="text-xs text-muted-foreground mt-4">
-              Upload this chapter&apos;s video
-            </div>
-          </div>
-      )}
+      {isEditing && getEditContent()}
+      {!isEditing && getVideoContent()}
       {initialData.video_url && !isEditing && (
         <div className="text-xs text-muted-foreground mt-2">
           Videos can make a few minutes to upload. Refresh the page if video does not appear

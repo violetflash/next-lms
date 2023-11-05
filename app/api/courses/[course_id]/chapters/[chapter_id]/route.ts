@@ -50,6 +50,7 @@ export async function PATCH(
         }
       });
 
+      // clean-up function (if user just changing the video)
       if (existingMuxData && existingMuxData.asset_id) {
         await Video.Assets.del(existingMuxData.asset_id);
         await db.muxData.delete({
