@@ -50,7 +50,7 @@ const ChapterIdPage = async ({params}: ChapterIdPageProps) => {
   const requiredFields = [
     chapter.title,
     chapter.description,
-    chapter.video_url
+    // chapter.video_url
   ];
 
   const {
@@ -89,7 +89,7 @@ const ChapterIdPage = async ({params}: ChapterIdPageProps) => {
               </span>
               </div>
               <ChapterActions
-                disabled={!isComplete}
+                isComplete={isComplete}
                 course_id={course_id}
                 chapter_id={chapter_id}
                 isPublished={chapter.is_published}

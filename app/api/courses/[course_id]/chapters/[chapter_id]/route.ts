@@ -38,6 +38,7 @@ export async function DELETE(
       }
     });
 
+
     if (!chapter) {
       return new NextResponse('Chapter not found', {status: 404});
     }
@@ -50,7 +51,8 @@ export async function DELETE(
         }
       });
       if (existingMuxData && existingMuxData.asset_id) {
-        await Video.Assets.del(existingMuxData.asset_id);
+        // FIXME mux service bugged
+        // await Video.Assets.del(existingMuxData.asset_id);
         await db.muxData.delete({
           where: {
             id: existingMuxData.id,
@@ -60,13 +62,6 @@ export async function DELETE(
       }
     }
 
-    const deleted = await db.chapter.delete({
-      where: {
-        id: chapter_id,
-        course_id: course_id
-      }
-    });
-
     // check if there are any chapters in the course that are published
     const publishedChaptersInThisCourse = await db.chapter.findMany({
       where: {
@@ -75,7 +70,8 @@ export async function DELETE(
       }
     });
 
-    // if
+
+    // if there are no published chapters in the course, un-publish the course
     if (!publishedChaptersInThisCourse.length) {
       await db.course.update({
         where: {
@@ -87,6 +83,14 @@ export async function DELETE(
       });
     }
 
+    const deleted = await db.chapter.delete({
+      where: {
+        id: chapter_id,
+        course_id: course_id
+      }
+    });
+
+    return NextResponse.json(deleted);
   } catch (e) {
     console.log('[CHAPTER_ID_DELETE]', e);
     return new NextResponse("internal Error", { status: 500 })
