@@ -13,14 +13,15 @@ import {
 export type ConfirmModalProps = {
   children: React.ReactNode;
   onConfirm: () => void;
-  // title: string;
+  title?: string;
   // isOpen: boolean;
   // onClose: () => void;
 }
 
 export const ConfirmModal = ({
   children,
-  onConfirm
+  onConfirm,
+  title
 }: ConfirmModalProps) => {
   return (
     <AlertDialog>
@@ -29,9 +30,12 @@ export const ConfirmModal = ({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone.
+          <AlertDialogTitle>
+            Are you sure?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="flex flex-col gap-y-2">
+            {title && title}
+            <span className="italic">This action cannot be undone.</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -2,6 +2,7 @@
 import { ConfirmModal } from '@/components/modals/confirm-modal';
 import { Button } from '@/components/ui/button';
 import { teacherRoute } from '@/lib/constants';
+import { useConfettiStore } from '@/lib/hooks/use-confetti-store';
 import { useToggle } from '@/lib/hooks/use-toggle';
 import axios from 'axios';
 import { Trash } from 'lucide-react';
@@ -13,20 +14,26 @@ type CourseActionsProps = {
   isComplete: boolean;
   course_id: string;
   isPublished: boolean;
+  courseTitle?: string;
 };
 export const CourseActions = ({
   isComplete,
   isPublished,
   course_id,
+  courseTitle
 }: CourseActionsProps) => {
   const router = useRouter();
   const [isLoading, toggleLoading, setIsLoading] = useToggle(false);
+  const confetti = useConfettiStore((state) => state);
 
   const togglePublish = async () => {
     try {
       setIsLoading(true);
       await axios.patch(`/api/courses/${course_id}/${isPublished ? 'un-publish' : 'publish'}`);
       toast.success(`Course successfully ${isPublished ? 'un-' : ''}published`);
+      if (!isPublished) {
+        confetti.onOpen();
+      }
       router.refresh();
     } catch (e) {
       toast.error(`Something went wrong while ${isPublished ? 'un-' : ''}publishing course`)
@@ -57,7 +64,10 @@ export const CourseActions = ({
       >
         {isPublished ? 'Un-publish' : 'Publish'}
       </Button>
-      <ConfirmModal onConfirm={onDelete}>
+      <ConfirmModal
+        title={`You are going to delete course: ${courseTitle}`}
+        onConfirm={onDelete}
+      >
         <Button
           size="sm"
           variant="destructive"

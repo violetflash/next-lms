@@ -91,6 +91,7 @@ const CourseIdPage = async ({ params: { course_id } }: Props) => {
             course_id={course_id}
             isPublished={course.is_published}
             isComplete={isCompleted}
+            courseTitle={course.title}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
